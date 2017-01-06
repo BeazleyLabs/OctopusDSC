@@ -443,7 +443,11 @@ function Uninstall-OctopusDeploy($name)
     $msiLog = "$($env:SystemDrive)\Octopus\logs\Octopus-x64.msi.uninstall.log"
     if (Test-Path $msiPath)
     {
-      $msiExitCode = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/x $msiPath /quiet /l*v $msiLog" -Wait -Passthru).ExitCode
+      $msiProc = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/x $msiPath /quiet /l*v $msiLog" -Passthru)
+      do { Start-Sleep -Milliseconds 500 }
+      until ($msiProc.HasExited)
+
+      $msiExitCode = $msiProc.ExitCode
       Write-Verbose "MSI uninstaller returned exit code $msiExitCode"
       if ($msiExitCode -ne 0)
       {
@@ -519,7 +523,6 @@ function Stop-OctopusDeployService($name)
     '--instance', $name
   )
   Invoke-OctopusServerCommand $args
-  Start-Sleep -Seconds 30
 }
 
 function Get-ServiceName
