@@ -519,6 +519,7 @@ function Stop-OctopusDeployService($name)
     '--instance', $name
   )
   Invoke-OctopusServerCommand $args
+  Start-Sleep -Seconds 5
 }
 
 function Get-ServiceName
